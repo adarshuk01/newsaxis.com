@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-
 // API base URL and key
 const API_BASE_URL = 'https://newsapi.org/v2/everything';
 const API_KEY = '566c1ee2409440ef805058fbb8d134e1';
@@ -37,6 +36,7 @@ export const fetchNews = createAsyncThunk(
           params: {
             q: searchQuery,
             apiKey: API_KEY,
+            sortBy,
             language: 'en',
           },
         })
@@ -44,18 +44,30 @@ export const fetchNews = createAsyncThunk(
       newsCache[cacheKey] = response.data; // Store result in cache
       return response.data;
     } catch (error) {
-      // Handle rate-limiting error (429) separately
-      if (error.response?.status === 429) {
-        return rejectWithValue('Rate limit exceeded. Please try again later.');
+      // Handle specific errors
+      if (error.response) {
+        if (error.response.status === 429) {
+          return rejectWithValue('Rate limit exceeded. Please try again later.');
+        }
+        if (error.response.status === 401) {
+          return rejectWithValue('Invalid API key. Please check your configuration.');
+        }
+        if (error.response.status === 404) {
+          return rejectWithValue('No articles found for the given query.');
+        }
+        return rejectWithValue(
+          error.response.data?.message || 'An error occurred while fetching news.'
+        );
       }
-      return rejectWithValue(error.response?.data || 'An error occurred');
+      // Handle network or other errors
+      return rejectWithValue('A network error occurred. Please check your connection.');
     }
   }
 );
 
 // Slice definition
 const latestNewsSlice = createSlice({
-  name: 'news',
+  name: 'latestNews',
   initialState: {
     articles: [],
     loading: false,
@@ -73,20 +85,20 @@ const latestNewsSlice = createSlice({
         // Filter out articles with invalid or removed content
         state.articles = action.payload.articles.filter((article) => {
           return (
-            article.title &&
+            article?.title &&
             article.title !== '[Removed]' &&
-            article.description &&
+            article?.description &&
             article.description !== '[Removed]' &&
-            article.content &&
+            article?.content &&
             article.content !== '[Removed]' &&
-            article.urlToImage &&
-            article.source?.name !== '[Removed]'
+            article?.urlToImage &&
+            (!article.source || article.source.name !== '[Removed]')
           );
         });
       })
       .addCase(fetchNews.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Failed to fetch news';
+        state.error = action.payload || 'Failed to fetch news.';
       });
   },
 });
