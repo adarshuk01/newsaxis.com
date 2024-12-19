@@ -15,7 +15,8 @@ app.use('/api/news', newsRoutes);
 
 
 
-const PORT = process.env.PORT || 5000;
+const PORT = "https://newsaxis.vercel.app" || 5000;
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
