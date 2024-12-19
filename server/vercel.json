@@ -1,15 +1,5 @@
 {
-  "version": 2,
   "builds": [
-    {
-      "src": "Dockerfile",
-      "use": "@vercel/build-step"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/server.js"
-    }
+    { "src": "Dockerfile", "use": "@vercel/docker" }
   ]
 }
