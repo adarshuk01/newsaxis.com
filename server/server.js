@@ -4,6 +4,7 @@ const cors = require('cors');
 const newsRoutes = require('./routes/newsRoutes');
 const { uploadAllImages } = require('./config/cloudnaryConfig'); // Import the upload function
 const dotenv = require('dotenv');
+const {instapost}=require('./controller/instaPostController')
 
 dotenv.config();
 
