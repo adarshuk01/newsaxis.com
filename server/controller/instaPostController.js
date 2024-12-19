@@ -21,7 +21,10 @@ const hashContent = (content) => crypto.createHash('md5').update(content).digest
         fs.mkdirSync(imagesDir);
     }
 
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
     const page = await browser.newPage();
     await page.setViewport({
         width: 1920,
@@ -29,7 +32,7 @@ const hashContent = (content) => crypto.createHash('md5').update(content).digest
         deviceScaleFactor: 2,
     });
 
-    const url = 'http://localhost:3000/instapost';
+    const url = 'https://newsaxis.vercel.app/instapost';
     const timeSelector = `#root > div > div > div > div.absolute.top-0.left-0.w-full.p-4.flex.justify-between.items-center.text-white.z-10 > time`;
     const summarySelector = `#root > div > div > div > div.absolute.bottom-0.left-0.w-full.bg-black.text-yellow-300.text-center.z-10 > div > p.hidden`;
     const screenshotSelector = `#root > div > div > div`;
