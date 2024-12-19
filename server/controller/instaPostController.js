@@ -6,8 +6,7 @@ const fs = require('fs');
 const FormData = require('form-data');
 const axios = require('axios');
 const cheerio = require('cheerio');
-const puppeteer = require('puppeteer');
-
+const puppeteer = require('puppeteer-core');
 require('dotenv').config(); // Secure access token
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -22,15 +21,16 @@ const hashContent = (content) => crypto.createHash('md5').update(content).digest
     }
 
     const browser = await puppeteer.launch({
+        executablePath: '/usr/bin/chromium-browser', // Path to the chromium on Vercel
         headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
+      });
     const page = await browser.newPage();
     await page.setViewport({
         width: 1920,
         height: 1080,
         deviceScaleFactor: 2,
     });
+console.log(browser);
 
     const url = 'https://newsaxis.vercel.app/instapost';
     const timeSelector = `#root > div > div > div > div.absolute.top-0.left-0.w-full.p-4.flex.justify-between.items-center.text-white.z-10 > time`;
@@ -40,6 +40,7 @@ const hashContent = (content) => crypto.createHash('md5').update(content).digest
     const checkAndTakeScreenshot = async () => {
         try {
             await page.goto(url, { waitUntil: 'networkidle2', timeout: 10000 });
+console.log(url);
 
             await page.waitForSelector(timeSelector, { timeout: 10000 });
             const content = await page.content();
