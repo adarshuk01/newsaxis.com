@@ -17,22 +17,16 @@ const hashContent = (content) => crypto.createHash('md5').update(content).digest
 
 (async () => {
     const imagesDir = path.join(__dirname, 'images');
-    if (!fs.existsSync(imagesDir)) {
-        fs.mkdirSync(imagesDir);
-    }
+    if (!fs.existsSync(imagesDir)) fs.mkdirSync(imagesDir);
 
     const browser = await puppeteer.launch({
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || (await chromium.executablePath),
-    args: chromium.args,
-    headless: chromium.headless,
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || (await chrome.executablePath),
+        args: chrome.args || ['--no-sandbox', '--disable-setuid-sandbox'],
+        headless: chrome.headless || true,
     });
 
     const page = await browser.newPage();
-    await page.setViewport({
-        width: 1920,
-        height: 1080,
-        deviceScaleFactor: 2,
-    });
+    await page.setViewport({ width: 1920, height: 1080, deviceScaleFactor: 2 });
 
     const url = 'https://newsaxis.vercel.app/instapost';
     const timeSelector = `#root > div > div > div > div.absolute.top-0.left-0.w-full.p-4.flex.justify-between.items-center.text-white.z-10 > time`;
@@ -48,43 +42,33 @@ const hashContent = (content) => crypto.createHash('md5').update(content).digest
             const $ = cheerio.load(content);
 
             const newContent = $(timeSelector).html();
-            if (!newContent) {
-                console.error(`Element not found for this selector: ${timeSelector}`);
+            if (!newContent) return console.error(`[ERROR] Selector not found: ${timeSelector}`);
+
+            const newContentHash = hashContent(newContent.trim());
+            if (postedHashes.has(newContentHash)) {
+                console.log(`[INFO] Content unchanged, skipping post.`);
                 return;
             }
-            const newContentHash = hashContent(newContent.trim());
 
-            if (!postedHashes.has(newContentHash)) {
-                postedHashes.add(newContentHash);
+            postedHashes.add(newContentHash);
 
-                const description = $(summarySelector).text().trim();
+            const description = $(summarySelector).text().trim() || 'Default description';
+            await page.waitForSelector(screenshotSelector);
+            await delay(5000);
 
-                await page.waitForSelector(screenshotSelector);
+            const element = await page.$(screenshotSelector);
+            const screenshotPath = path.join(imagesDir, 'element-screenshot.png');
+            fs.readdirSync(imagesDir).forEach((file) => fs.unlinkSync(path.join(imagesDir, file))); // Clean old files
 
-                // Adding a delay before taking the screenshot to ensure content is fully loaded
-                await delay(5000); // You can adjust this delay as needed, e.g., 5000ms = 5 seconds
+            await element.screenshot({ path: screenshotPath });
+            console.log(`[INFO] Screenshot saved: ${screenshotPath}`);
 
-                const element = await page.$(screenshotSelector);
-                const screenshotPath = path.join(imagesDir, `element-screenshot.png`);
+            const uploadedUrls = await uploadAllImages(imagesDir);
+            if (uploadedUrls.length > 0) await postToInstagram(uploadedUrls[0], description);
 
-                await element.screenshot({ path: screenshotPath });
-                console.log(`Screenshot saved: ${screenshotPath}`);
-
-                await delay(3000);
-                const uploadedUrls = await uploadAllImages(imagesDir);
-                console.log('Uploaded Image URLs:', uploadedUrls);
-
-                if (uploadedUrls.length > 0) {
-                    await postToInstagram(uploadedUrls[0], description);
-                }
-
-                // Clean up the screenshot after upload
-                fs.unlinkSync(screenshotPath);
-            } else {
-                console.log('Content did not change, skipping post.');
-            }
+            fs.unlinkSync(screenshotPath); // Cleanup
         } catch (error) {
-            console.error('Error while taking screenshot:', error);
+            console.error(`[ERROR] ${error.message}`);
         }
     };
 
@@ -92,7 +76,8 @@ const hashContent = (content) => crypto.createHash('md5').update(content).digest
 
     setTimeout(() => {
         clearInterval(intervalId);
-        console.log('Stopped monitoring.');
+        console.log(`[INFO] Stopped monitoring.`);
         browser.close();
     }, 7600000);
 })();
+
