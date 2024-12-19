@@ -1,5 +1,7 @@
+const express = require('express');
+const bodyParser = require('body-parser');
 const cors = require('cors');
-const  express=require('express')
+const newsRoutes = require('./routes/newsRoutes'); // Ensure this path is correct
 const app = express();
 
 // Allow requests from the frontend
@@ -11,7 +13,10 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+// Middleware to parse the body of the request
 app.use(bodyParser.json());
+
+// Use the newsRoutes for API endpoints
 app.use('/api/news', newsRoutes);
 
 const PORT = process.env.PORT || 5001;
