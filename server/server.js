@@ -3,20 +3,17 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const newsRoutes = require('./routes/newsRoutes');
 const { uploadAllImages } = require('./config/cloudnaryConfig'); // Import the upload function
-require('./controller/instaPostController')
-const path = require('path');
 const dotenv = require('dotenv');
-const app = express();
 
-dotenv.config()
+dotenv.config();
+
+const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use('/api/news', newsRoutes);
 
+const PORT = process.env.PORT || 5000;
 
-
-const PORT = "https://newsaxis.vercel.app" || 5000;
-
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });
