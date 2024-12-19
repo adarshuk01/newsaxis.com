@@ -1,6 +1,7 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
-const puppeteer=require('puppeteer')
+const puppeteer=require('puppeteer-core')
+const chrome = require('chrome-aws-lambda');
 
 const BASE_URL = 'https://www.manoramaonline.com';
 const DEFAULT_ICON = 'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/50/3f/56/503f5669-704b-5689-b68b-88ce6dd7d7e9/AppIcon4NormalUsers-0-0-1x_U007emarketing-0-6-0-85-220.png/512x512bb.jpg';
@@ -146,12 +147,17 @@ exports.fetchEntertainmentNews = async () => {
 const bannerUrl = 'https://www.mathrubhumi.com/';
 
 exports.fetchBannerData = async () => {
-  const browser = await puppeteer.launch({ headless: true });
-  const page = await browser.newPage();
+  const browser = await puppeteer.launch({
+    args: chrome.args, // Arguments to launch Chromium
+    executablePath: await chrome.executablePath, // Path to Chromium for serverless environments
+    headless: chrome.headless, // Ensure headless mode is set
+  });
 
+  const page = await browser.newPage();
+  
   try {
     // Navigate to the page
-    await page.goto(bannerUrl, { waitUntil: 'networkidle2' });
+    await page.goto('your_banner_url_here', { waitUntil: 'networkidle2' });
 
     // Wait for the banners to load (adjust selector if needed)
     await page.waitForSelector('body > div.mpp-container > div.wide-top.mt-2.mb-2', {
@@ -178,9 +184,10 @@ exports.fetchBannerData = async () => {
     if (banners.length === 0) {
       console.error('No banners were found. Please verify the selector.');
     }
+
+    // Remove duplicate banners by comparing stringified objects
     const uniqueBanners = [...new Set(banners.map(b => JSON.stringify(b)))].map(b => JSON.parse(b));
   
-    
     return uniqueBanners;
     
   } catch (error) {
