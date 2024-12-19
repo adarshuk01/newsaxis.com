@@ -4,11 +4,10 @@
   "description": "A simple news scraper using Node.js, Express, and Cheerio",
   "main": "server.js",
   "scripts": {
-  "install": "apt-get update && apt-get install -y libnss3",
-  "build": "next build",
-  "start": "next start"
-},
-
+    "postinstall": "node install-puppeteer-deps.js",
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
   "dependencies": {
     "axios": "^1.7.9",
     "cheerio": "^1.0.0",
