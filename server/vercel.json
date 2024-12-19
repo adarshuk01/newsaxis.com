@@ -7,9 +7,16 @@
       }
     ],
     "functions": {
-      "node": {
-        "includeFiles": ["node_modules/**/*", "public/**/*"]
+      "api/**/*.js": {
+        "runtime": "nodejs18.x",
+        "includeFiles": "node_modules/**"
       }
-    }
+    },
+    "routes": [
+      {
+        "src": "/api/(.*)",
+        "dest": "/server.js"
+      }
+    ]
   }
   
