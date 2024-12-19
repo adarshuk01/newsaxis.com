@@ -6,15 +6,10 @@
         "use": "@vercel/node"
       }
     ],
-    "routes": [
-      {
-        "src": "/api/(.*)",
-        "dest": "/server.js"
+    "functions": {
+      "node": {
+        "includeFiles": ["node_modules/**/*", "public/**/*"]
       }
-    ],
-    "env": {
-      "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD": "true", 
-      "CHROME_BIN": "/opt/render/chrome"
     }
   }
   
