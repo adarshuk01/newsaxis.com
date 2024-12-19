@@ -49,7 +49,7 @@ const hashContent = (content) => crypto.createHash('md5').update(content).digest
 
             const newContent = $(timeSelector).html();
             if (!newContent) {
-                console.error(`Element not found for selector: ${timeSelector}`);
+                console.error(`Element not found for this selector: ${timeSelector}`);
                 return;
             }
             const newContentHash = hashContent(newContent.trim());
