@@ -52,6 +52,7 @@ function InstaPost() {
             {article.title || 'No title available'}
           </h1>
           <div className="text-white p-2">
+            <p className='hidden'>{article.summary}</p>
             <p>NewsAxisMedia</p>
         </div>
         </div>

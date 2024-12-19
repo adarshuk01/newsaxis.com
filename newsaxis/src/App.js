@@ -6,6 +6,7 @@ import DynamicPage from './pages/DynamicPage';
 import ManoramaNews from './pages/malayalam/ManoramaNews';
 import MalayalamReels from './pages/malayalam/MalayalamReels';
 import InstaPost from './instagram/InstaPost';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path=":section" element={<DynamicPage />} />
           <Route path='/manoramanews' element={<ManoramaNews />}></Route>
           <Route path='/malayalamreels' element={<MalayalamReels />}></Route>
+          <Route path='/*' element={<NotFound />}></Route>
         </Route>
         <Route path='/instapost' element={<InstaPost />}></Route>
       </Routes>

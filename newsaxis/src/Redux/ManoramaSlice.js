@@ -1,14 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000/api/news';
+const API_BASE_URL = process.env.REACT_APP_API_URL ||'http://localhost:5000/api/news';
+console.log(process.env.REACT_APP_API_URL); // Output: https://api.example.com
 
 // Async thunk to fetch news data based on type
 export const fetchNews = createAsyncThunk(
   'manoramanews/fetchNews',
   async ({ type }, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/news/${type}`);
+      const response = await axios.get(`${API_BASE_URL}/${type}`);
       console.log(response);
 
       return response.data;

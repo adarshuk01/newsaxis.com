@@ -46,7 +46,7 @@ const GradientCard = ({ article, width, showPlayButton = false }) => {
             </div>
           </div>
 
-          <h2 className="text-yellow-300 text-sm font-semibold leading-tight mb-2">
+          <h2 className="text-white text-sm font-semibold leading-tight mb-2">
             {truncateText(article.title, 20)}
           </h2>
           <p className="text-gray-300 text-sm line-clamp-2">

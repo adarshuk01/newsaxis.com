@@ -16,8 +16,10 @@ function HomePage() {
     <div className='space-y-8'>
      <NewsBanners />
      <BulletinStory />
-     <MustRead /> 
+     <MustRead />
+     <LatestNews /> 
      <NewsReels />
+     
      <Subscribe />
     </div>
   )
