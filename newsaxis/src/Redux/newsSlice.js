@@ -24,8 +24,8 @@ const retryWithBackoff = async (fn, retries = 3, delay = 1000) => {
 // Async thunk to fetch news data
 export const fetchNews = createAsyncThunk(
   'news/fetchNews',
-  async ({ searchQuery, sortBy }, { rejectWithValue }) => {
-    const cacheKey = `${searchQuery}-${sortBy}`;
+  async ({ searchQuery, sortBy, page = 1 }, { rejectWithValue }) => {
+    const cacheKey = `${searchQuery}-${sortBy}-${page}`;
     if (newsCache[cacheKey]) {
       return newsCache[cacheKey]; // Return cached response if available
     }
@@ -38,18 +38,22 @@ export const fetchNews = createAsyncThunk(
             apiKey: API_KEY,
             sortBy: sortBy,
             language: 'en',
-            searchIn: 'title',
+            page, // Add pagination support
           },
         })
       );
       newsCache[cacheKey] = response.data; // Store result in cache
+      // Optionally persist cache to localStorage for longer storage
+      localStorage.setItem(cacheKey, JSON.stringify(response.data));
       return response.data;
     } catch (error) {
-      // Handle rate-limiting error (429) separately
+      // Handle rate-limiting error (429) or others
       if (error.response?.status === 429) {
         return rejectWithValue('Rate limit exceeded. Please try again later.');
       }
-      return rejectWithValue(error.response?.data || 'An error occurred');
+      return rejectWithValue(
+        error.response?.data?.message || 'An unexpected error occurred'
+      );
     }
   }
 );
@@ -74,12 +78,12 @@ const newsSlice = createSlice({
         // Filter out invalid articles
         state.articles = action.payload.articles.filter((article) => {
           return (
-            article.title &&
+            article?.title &&
             article.title !== '[Removed]' &&
-            article.description &&
+            article?.description &&
             article.description !== '[Removed]' &&
-            article.urlToImage &&
-            article.content &&
+            article?.urlToImage &&
+            article?.content &&
             article.content !== '[Removed]' &&
             (!article.source || article.source.name !== '[Removed]')
           );
