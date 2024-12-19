@@ -12,7 +12,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use('/api/news', newsRoutes);
 
-const PORT = process.env.PORT || 5001;
+const PORT = 5002 || 5001;
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
