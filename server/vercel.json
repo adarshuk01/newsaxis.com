@@ -13,8 +13,8 @@
       }
     ],
     "env": {
-      "PUPPETEER_EXECUTABLE_PATH": "/usr/bin/google-chrome",  
-      "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD": "true" 
+      "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD": "true", 
+      "CHROME_BIN": "/opt/render/chrome", 
     }
   }
   
