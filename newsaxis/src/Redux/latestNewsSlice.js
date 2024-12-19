@@ -37,7 +37,6 @@ export const fetchNews = createAsyncThunk(
           params: {
             q: searchQuery,
             apiKey: API_KEY,
-            sortBy: sortBy,
             language: 'en',
           },
         })
