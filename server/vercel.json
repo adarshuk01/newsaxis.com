@@ -11,6 +11,10 @@
         "src": "/api/(.*)",
         "dest": "/server.js"
       }
-    ]
+    ],
+    "env": {
+      "PUPPETEER_EXECUTABLE_PATH": "/usr/bin/google-chrome",  
+      "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD": "true" 
+    }
   }
   
