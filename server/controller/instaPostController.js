@@ -22,9 +22,9 @@ const hashContent = (content) => crypto.createHash('md5').update(content).digest
     }
 
     const browser = await puppeteer.launch({
-        args: [...chrome.args, '--no-sandbox', '--disable-setuid-sandbox'], // Arguments to launch Chromium
-        executablePath: await chrome.executablePath, // Path to Chromium
-        headless: chrome.headless, // Ensure headless mode is set
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || (await chromium.executablePath),
+    args: chromium.args,
+    headless: chromium.headless,
     });
 
     const page = await browser.newPage();
