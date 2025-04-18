@@ -144,61 +144,61 @@ exports.fetchEntertainmentNews = async () => {
 
 
 
-const bannerUrl = 'https://www.mathrubhumi.com/';
 
-exports.fetchBannerData = async () => {
-  const browser = await puppeteer.launch({
-    args: chrome.args, // Arguments to launch Chromium
-    executablePath: await chrome.executablePath, // Path to Chromium for serverless environments
-    headless: chrome.headless, // Ensure headless mode is set
-  });
+// exports.fetchBannerData = async () => {
+//   const browser = await puppeteer.launch({
+//     headless: true,
+//     executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe', // Change this path if necessary
+//   });
 
-  const page = await browser.newPage();
-  
-  try {
-    // Navigate to the page
-    await page.goto('your_banner_url_here', { waitUntil: 'networkidle2' });
+//   const page = await browser.newPage();
 
-    // Wait for the banners to load (adjust selector if needed)
-    await page.waitForSelector('body > div.mpp-container > div.wide-top.mt-2.mb-2', {
-      timeout: 10000,
-    });
+//   try {
+//     await page.goto(bannerUrl, { waitUntil: 'networkidle2' });
 
-    // Extract banner data
-    const banners = await page.$$eval(
-      '#slick167311 > div > div > div',
-      (elements) =>
-        elements.map((el) => {
-          const image = el.querySelector('img')?.getAttribute('src');
-          const title = el.querySelector('h3 a')?.innerText || 'No title available';
-          const description = el.querySelector('p')?.innerText || 'No description available';
+//     await page.waitForSelector(
+//       'body > div.mpp-container > div.wide-top.mt-2.mb-2',
+//       { timeout: 10000 }
+//     );
 
-          return {
-            title: title.trim(),
-            description: description.trim(),
-            image: image ? (image.startsWith('http') ? image : `https://www.mathrubhumi.com${image}`) : 'No image available',
-          };
-        })
-    );
+//     const banners = await page.$$eval(
+//       '#slick167311 > div > div > div',
+//       (elements) =>
+//         elements.map((el) => {
+//           const image = el.querySelector('img')?.getAttribute('src');
+//           const title = el.querySelector('h3 a')?.innerText || 'No title available';
+//           const description = el.querySelector('p')?.innerText || 'No description available';
 
-    if (banners.length === 0) {
-      console.error('No banners were found. Please verify the selector.');
-    }
+//           return {
+//             title: title.trim(),
+//             description: description.trim(),
+//             image: image
+//               ? image.startsWith('http')
+//                 ? image
+//                 : `https://www.mathrubhumi.com${image}`
+//               : 'No image available',
+//           };
+//         })
+//     );
 
-    // Remove duplicate banners by comparing stringified objects
-    const uniqueBanners = [...new Set(banners.map(b => JSON.stringify(b)))].map(b => JSON.parse(b));
-  
-    return uniqueBanners;
-    
-  } catch (error) {
-    console.error('Error fetching banners:', error.message);
-  } finally {
-    await browser.close();
-  }
-};
+//     if (banners.length === 0) {
+//       console.error('No banners were found. Please verify the selector.');
+//     }
 
-// To fetch and log the banner data, use this function
-exports.fetchBannerData();
+//     const uniqueBanners = [...new Set(banners.map((b) => JSON.stringify(b)))].map((b) =>
+//       JSON.parse(b)
+//     );
+
+//     return uniqueBanners;
+//   } catch (error) {
+//     console.error('Error fetching banners:', error.message);
+//   } finally {
+//     await browser.close();
+//   }
+// };
+
+// // To fetch and log the banner data, use this function
+// exports.fetchBannerData();
 
 
 

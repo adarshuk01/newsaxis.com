@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL ||'https://newsaxis-server-git-main-adarshuk01s-projects.vercel.app/api/news';
+const API_BASE_URL = process.env.REACT_APP_API_URL ||'http://localhost:5001/api/news';
 
 // Async thunk to fetch news data based on type
 export const fetchNews = createAsyncThunk(
